@@ -23,7 +23,6 @@ export default function Page() {
 
   const [error, setError] = useState("");
 
-
   useEffect(() => {
     async function fetchCinemas() {
       try {
@@ -38,7 +37,6 @@ export default function Page() {
         }
 
         setCinemas(data);
-
       } catch (error) {
         console.error(error);
         setError(error.message);
@@ -49,7 +47,6 @@ export default function Page() {
 
     fetchCinemas();
   }, []);
-
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
@@ -80,7 +77,6 @@ export default function Page() {
       }
 
       setBookingResult(data);
-
     } catch (error) {
       console.error(error);
       setError(error.message);
@@ -88,7 +84,6 @@ export default function Page() {
       setBookingLoading(false);
     }
   };
-
 
   const handleCinemaSubmit = async (e) => {
     e.preventDefault();
@@ -122,7 +117,6 @@ export default function Page() {
       }
 
       setCinemas((prev) => [...prev, data.cinema]);
-
       setSelectedCinemaId(data.cinema._id);
       setCinemaForm({
         name: "",
@@ -131,7 +125,6 @@ export default function Page() {
 
       setShowCinemaModal(false);
       setBookingResult(null);
-
     } catch (error) {
       console.error(error);
       setError(error.message);
@@ -140,13 +133,52 @@ export default function Page() {
     }
   };
 
+  const handleCinemaDelete = async (id) => {
+    const cinema = cinemas.find((item) => item._id === id);
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${cinema.name}?`
+    );
+
+    if (!confirmed) return;
+
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cinemas`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete cinema");
+      }
+
+      setCinemas((prev) => prev.filter((item) => item._id !== id));
+
+      if (selectedCinemaId === id) {
+        setSelectedCinemaId("");
+        setBookingResult(null);
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
 
   const handleCinemaChange = (id) => {
     setSelectedCinemaId(id);
     setBookingResult(null);
     setError("");
   };
-
 
   const handleOpenCinemaModal = () => {
     setCinemaForm({
@@ -184,6 +216,7 @@ export default function Page() {
             setShowCinemaModal(false);
             setError("");
           }}
+          onDeleteCinema={handleCinemaDelete}
           error={error}
         />
       )}

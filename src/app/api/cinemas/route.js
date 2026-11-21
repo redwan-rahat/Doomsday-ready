@@ -1,4 +1,5 @@
 import connectDB from "@/lib/db";
+import { ObjectId } from "mongodb";
 
 export async function GET() {
   try {
@@ -55,7 +56,7 @@ export async function POST(request) {
     const db = await connectDB();
     const cinemas = db.collection("cinemas");
 
-    // Check duplicate cinema name (case-insensitive)
+
     const existingCinema = await cinemas.findOne({
       name: { $regex: `^${name.trim()}$`, $options: "i" },
     });
@@ -90,6 +91,42 @@ export async function POST(request) {
     return Response.json(
       { message: "Failed to create cinema" },
       { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { id } = await request.json();
+
+    if (!ObjectId.isValid(id)) {
+      return Response.json(
+        { message: "Invalid cinema ID" },
+        { status: 400 }
+      );
+    }
+
+    const db = await connectDB();
+
+    const result = await db.collection("cinemas").deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    if (result.deletedCount === 0) {
+      return Response.json(
+        { message: "Cinema not found" },
+        { status: 404 }
+      );
+    }
+
+    return Response.json(
+      { message: "Cinema deleted successfully" },
+      { status: 200 }
+    );
+  } catch {
+    return Response.json(
+      { message: "Failed to delete cinema" },
+      { status: 500 }
     );
   }
 }

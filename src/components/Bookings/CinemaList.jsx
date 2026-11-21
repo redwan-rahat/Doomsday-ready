@@ -1,11 +1,13 @@
+
 "use client";
 
-import { FiFilm } from "react-icons/fi";
+import { FiFilm, FiTrash2 } from "react-icons/fi";
 
 export default function CinemaList({
   cinemas = [],
   selectedCinemaId,
   onSelectCinema,
+  onDeleteCinema,
 }) {
   if (cinemas.length === 0) {
     return (
@@ -36,12 +38,22 @@ export default function CinemaList({
               : "border-border hover:border-primary/50"
           }`}
         >
-          {/* Card Header */}
           <div className="flex items-center justify-between">
             <FiFilm className="text-primary" size={20} />
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteCinema(cinema._id);
+              }}
+              className="text-text-secondary hover:text-red-400 cursor-pointer"
+              aria-label={`Delete ${cinema.name}`}
+            >
+              <FiTrash2 size={16} />
+            </button>
           </div>
 
-          {/* Card Details */}
           <div>
             <h4 className="font-semibold text-sm leading-snug">
               {cinema.name}
