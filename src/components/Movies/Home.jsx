@@ -22,7 +22,7 @@ export default function Home() {
     runtime: "",
   });
 
-  // Fetch all movies
+
   useEffect(() => {
     async function fetchMovies() {
       try {
@@ -182,6 +182,7 @@ export default function Home() {
           method: "DELETE",
         }
       );
+
 
       const data = await response.json();
 
