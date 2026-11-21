@@ -112,12 +112,21 @@ export default function RewatchPlan({
                   {movies.map((movie) => (
                     <button
                       key={movie._id}
-                      onClick={() => onSelectMovie(movie)}
-                      className={`w-full flex items-center gap-3 text-left p-4 rounded-lg border transition-colors cursor-pointer ${
-                        selectedMovie?._id === movie._id
-                          ? "bg-primary-muted border-primary"
-                          : "bg-surface-secondary border-transparent hover:border-border"
-                      }`}
+
+                      onClick={() => {
+                        onSelectMovie(movie);
+
+                        document.getElementById("selected-movie-section")?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
+                      }}
+
+                      
+                      className={`w-full flex items-center gap-3 text-left p-4 rounded-lg border transition-colors cursor-pointer ${selectedMovie?._id === movie._id
+                        ? "bg-primary-muted border-primary"
+                        : "bg-surface-secondary border-transparent hover:border-border"
+                        }`}
                     >
                       <div className="shrink-0">
                         <FiFilm
@@ -160,7 +169,10 @@ export default function RewatchPlan({
             </div>
 
             {/* Rewatch Order */}
-            <div className="bg-surface rounded-xl p-6 min-w-0">
+            <div
+              id="selected-movie-section"
+              className="bg-surface rounded-xl p-6 min-w-0"
+            >
 
               {/* Selected Movie Header */}
               {selectedMovie ? (
@@ -283,11 +295,10 @@ export default function RewatchPlan({
                                         </div>
 
                                         <span
-                                          className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 ${
-                                            movie.watched
-                                              ? "bg-green-500/15 text-green-400"
-                                              : "bg-yellow-500/15 text-yellow-400"
-                                          }`}
+                                          className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 ${movie.watched
+                                            ? "bg-green-500/15 text-green-400"
+                                            : "bg-yellow-500/15 text-yellow-400"
+                                            }`}
                                         >
                                           {movie.watched
                                             ? "Watched"

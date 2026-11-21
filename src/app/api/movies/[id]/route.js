@@ -1,17 +1,15 @@
-
 import connectDB from "@/lib/db";
 import { hasCircularDependency } from "@/services/movieOrder";
 import { ObjectId } from "mongodb";
+
+
 
 export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
 
     if (!ObjectId.isValid(id)) {
-      return Response.json(
-        { message: "Invalid movie ID" },
-        { status: 400 }
-      );
+      return Response.json({ message: "Invalid movie ID" }, { status: 400 });
     }
 
     const db = await connectDB();
@@ -25,9 +23,27 @@ export async function PATCH(request, { params }) {
     });
 
     if (!currentMovie) {
+      return Response.json({ message: "Movie not found" }, { status: 404 });
+    }
+
+    // Check if another movie already uses this title
+    const title = (data.title ?? currentMovie.title).trim();
+
+    const duplicateMovie = await movies.findOne(
+      {
+        title,
+        _id: { $ne: new ObjectId(id) },
+      },
+      { collation: { locale: "en", strength: 2 } },
+    );
+
+    if (duplicateMovie) {
       return Response.json(
-        { message: "Movie not found" },
-        { status: 404 }
+        {
+          code: "DUPLICATE_TITLE",
+          message: "A movie with this title already exists",
+        },
+        { status: 409 },
       );
     }
 
@@ -42,7 +58,7 @@ export async function PATCH(request, { params }) {
     const hasCycle = hasCircularDependency(
       existingMovies,
       currentMovie._id,
-      prerequisites
+      prerequisites,
     );
 
     if (hasCycle) {
@@ -51,25 +67,23 @@ export async function PATCH(request, { params }) {
           code: "CIRCULAR_DEPENDENCY",
           message: "Circular dependency detected",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     // Prepare updated movie
     const updatedMovie = {
-      title: data.title ?? currentMovie.title,
+      title,
       releaseDate: data.releaseDate ?? currentMovie.releaseDate,
-      runtime: data.runtime !== undefined
-        ? Number(data.runtime)
-        : currentMovie.runtime,
+      runtime:
+        data.runtime !== undefined
+          ? Number(data.runtime)
+          : currentMovie.runtime,
       prerequisites,
       watched: data.watched ?? currentMovie.watched,
     };
 
-    await movies.updateOne(
-      { _id: currentMovie._id },
-      { $set: updatedMovie }
-    );
+    await movies.updateOne({ _id: currentMovie._id }, { $set: updatedMovie });
 
     return Response.json(
       {
@@ -79,15 +93,14 @@ export async function PATCH(request, { params }) {
           ...updatedMovie,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error) {
     console.error(error);
 
     return Response.json(
       { message: "Failed to update movie" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -97,10 +110,7 @@ export async function DELETE(request, { params }) {
     const { id } = await params;
 
     if (!ObjectId.isValid(id)) {
-      return Response.json(
-        { message: "Invalid movie ID" },
-        { status: 400 }
-      );
+      return Response.json({ message: "Invalid movie ID" }, { status: 400 });
     }
 
     const db = await connectDB();
@@ -111,28 +121,25 @@ export async function DELETE(request, { params }) {
     });
 
     if (result.deletedCount === 0) {
-      return Response.json(
-        { message: "Movie not found" },
-        { status: 404 }
-      );
+      return Response.json({ message: "Movie not found" }, { status: 404 });
     }
 
     // Remove this movie from other movies' prerequisites
     await movies.updateMany(
       { prerequisites: id },
-      { $pull: { prerequisites: id } }
+      { $pull: { prerequisites: id } },
     );
 
     return Response.json(
       { message: "Movie deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
 
     return Response.json(
       { message: "Failed to delete movie" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

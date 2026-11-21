@@ -43,12 +43,15 @@ export default function Page() {
     }, []);
 
     // Fetch rewatch order whenever selected movie changes
+    // Fetch rewatch order whenever selected movie changes
     useEffect(() => {
         if (!selectedMovie) {
             setRewatchOrder({});
             setWatchedCount(0);
             return;
         }
+
+        let ignore = false;
 
         async function fetchRewatchOrder() {
             setLoadingRewatch(true);
@@ -67,18 +70,31 @@ export default function Page() {
                     );
                 }
 
-                setRewatchOrder(data.rewatchOrder);
-                setWatchedCount(data.watchedCount);
+                console.log("API rewatch order:", data.rewatchOrder);
+                console.log("Watch levels:", Object.keys(data.rewatchOrder));
+
+                if (!ignore) {
+                    setRewatchOrder(data.rewatchOrder);
+                    setWatchedCount(data.watchedCount);
+                }
             } catch (error) {
-                console.error(error);
-                setError(error.message);
-                setRewatchOrder({});
+                if (!ignore) {
+                    console.error(error);
+                    setError(error.message);
+                    setRewatchOrder({});
+                }
             } finally {
-                setLoadingRewatch(false);
+                if (!ignore) {
+                    setLoadingRewatch(false);
+                }
             }
         }
 
         fetchRewatchOrder();
+
+        return () => {
+            ignore = true;
+        };
     }, [selectedMovie]);
 
     // Handle movie selection

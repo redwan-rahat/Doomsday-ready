@@ -238,19 +238,7 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-500/10 text-red-400 rounded-lg p-4 mb-6 flex items-center justify-between">
-              <p className="text-sm">{error}</p>
 
-              <button
-                onClick={() => setError("")}
-                className="cursor-pointer text-sm"
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
 
           {/* Movie Collection */}
           <div className="mb-5 flex items-center justify-between">
