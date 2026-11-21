@@ -11,10 +11,8 @@ export default function Home() {
   const [availableMovies, setAvailableMovies] = useState([]);
   const [selectedPrerequisites, setSelectedPrerequisites] = useState([]);
   const [editingMovie, setEditingMovie] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [fetchingMovies, setFetchingMovies] = useState(true);
-  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -22,21 +20,18 @@ export default function Home() {
     runtime: "",
   });
 
-
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/movies`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/movies`
+        );
         const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch movies");
-        }
+        if (!response.ok) return;
 
         setMovies(Array.isArray(data) ? data : data.movies || []);
-      } catch (error) {
-        console.error(error);
-        setError(error.message);
+      } catch {
       } finally {
         setFetchingMovies(false);
       }
@@ -45,49 +40,35 @@ export default function Home() {
     fetchMovies();
   }, []);
 
-  // Open Add Movie Modal
   const openAddModal = () => {
     setEditingMovie(null);
-
     setFormData({
       title: "",
       releaseDate: "",
       runtime: "",
     });
-
     setSelectedPrerequisites([]);
     setAvailableMovies(movies);
-    setError("");
     setShowMovieModal(true);
   };
 
-  // Open Edit Movie Modal
   const openEditModal = (movie) => {
     setEditingMovie(movie);
-
     setFormData({
       title: movie.title,
       releaseDate: movie.releaseDate,
       runtime: movie.runtime,
     });
-
     setSelectedPrerequisites(movie.prerequisites || []);
-
-    // Exclude the current movie from its own prerequisite options
     setAvailableMovies(
       movies.filter((item) => item._id !== movie._id)
     );
-
-    setError("");
     setShowMovieModal(true);
   };
 
-  // Add or Update Movie
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-    setError("");
 
     try {
       const isEditing = Boolean(editingMovie);
@@ -111,9 +92,7 @@ export default function Home() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to save movie");
-      }
+      if (!response.ok) return;
 
       if (isEditing) {
         setMovies((prev) =>
@@ -127,14 +106,11 @@ export default function Home() {
 
       setShowMovieModal(false);
       setEditingMovie(null);
-    } catch (error) {
-      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Toggle Watched Status
   const handleWatchedChange = async (movie) => {
     try {
       const response = await fetch(
@@ -152,22 +128,16 @@ export default function Home() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update watched status");
-      }
+      if (!response.ok) return;
 
       setMovies((prev) =>
         prev.map((item) =>
           item._id === movie._id ? data.movie : item
         )
       );
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    }
+    } catch {}
   };
 
-  // Delete Movie
   const handleDelete = async (movie) => {
     const confirmed = window.confirm(
       `Are you sure you want to delete ${movie.title}?`
@@ -183,23 +153,14 @@ export default function Home() {
         }
       );
 
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to delete movie");
-      }
+      if (!response.ok) return;
 
       setMovies((prev) =>
         prev.filter((item) => item._id !== movie._id)
       );
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    }
+    } catch {}
   };
 
-  // Toggle prerequisite selection
   const handlePrerequisiteChange = (id) => {
     setSelectedPrerequisites((prev) =>
       prev.includes(id)
@@ -214,16 +175,12 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground">
       <section className="p-5 md:p-8 lg:p-10">
         <div className="max-w-7xl mx-auto">
-
-          {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <p className="text-primary text-sm mb-2">Movies</p>
-
               <h2 className="text-3xl font-semibold">
                 Your MCU Watchlist
               </h2>
-
               <p className="text-text-secondary mt-2">
                 Manage your movies and track your watch progress.
               </p>
@@ -238,12 +195,8 @@ export default function Home() {
             </button>
           </div>
 
-
-
-          {/* Movie Collection */}
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-xl font-semibold">All Movies</h3>
-
             <span className="text-xs text-text-muted">
               {movies.length} movies
             </span>
@@ -260,7 +213,6 @@ export default function Home() {
                   key={movie._id}
                   className="aspect-[4/3] bg-surface rounded-xl p-4 flex flex-col justify-between border border-border hover:border-primary/50 transition-colors"
                 >
-                  {/* Card Header */}
                   <div className="flex items-center justify-between">
                     <FiFilm className="text-primary" size={20} />
 
@@ -283,24 +235,22 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Card Details */}
                   <div>
                     <h4 className="font-semibold text-sm leading-snug">
                       {movie.title}
                     </h4>
-
                     <p className="text-xs text-text-muted mt-2">
                       {formatDate(movie.releaseDate)} · {movie.runtime} min
                     </p>
                   </div>
 
-                  {/* Watched Status */}
                   <button
                     onClick={() => handleWatchedChange(movie)}
-                    className={`flex items-center gap-2 text-xs font-medium w-fit px-3 py-1.5 rounded-full cursor-pointer transition-colors ${movie.watched
-                      ? "bg-green-500/15 text-green-400"
-                      : "bg-surface-secondary text-text-secondary hover:text-foreground"
-                      }`}
+                    className={`flex items-center gap-2 text-xs font-medium w-fit px-3 py-1.5 rounded-full cursor-pointer transition-colors ${
+                      movie.watched
+                        ? "bg-green-500/15 text-green-400"
+                        : "bg-surface-secondary text-text-secondary hover:text-foreground"
+                    }`}
                   >
                     <FiCheckCircle size={14} />
                     {movie.watched ? "Watched" : "Mark as watched"}
@@ -311,9 +261,7 @@ export default function Home() {
           ) : (
             <div className="bg-surface rounded-xl p-10 text-center">
               <FiFilm className="mx-auto text-text-muted mb-3" size={28} />
-
               <h4 className="font-medium">No movies yet</h4>
-
               <p className="text-sm text-text-muted mt-2">
                 Add your first movie to start building your MCU watchlist.
               </p>
@@ -322,7 +270,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Movie Modal */}
       {showMovieModal && (
         <MovieModal
           formData={formData}
@@ -336,7 +283,6 @@ export default function Home() {
           }}
           onSubmit={handleSubmit}
           loading={loading}
-          error={error}
         />
       )}
     </main>

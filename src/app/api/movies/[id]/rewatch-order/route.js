@@ -6,28 +6,26 @@ export async function GET(request, { params }) {
   try {
     const { id } = await params;
 
-    // Validate movie ID
+
     if (!ObjectId.isValid(id)) {
       return Response.json({ message: "Invalid movie ID" }, { status: 400 });
     }
 
-    // Connect to database
     const db = await connectDB();
     const movies = db.collection("movies");
 
-    // Get all movies
+
     const movieList = await movies.find({}).toArray();
 
-    // Generate rewatch order
+  
 
     const result = getRewatchOrder(movieList, id);
 
-    // Check whether target movie exists
+  
     if (!result) {
       return Response.json({ message: "Movie not found" }, { status: 404 });
     }
 
-    // Return movie data with string IDs
 const rewatchOrder = Object.fromEntries(
   Object.entries(result.rewatchOrder).map(([level, movies]) => [
     level,

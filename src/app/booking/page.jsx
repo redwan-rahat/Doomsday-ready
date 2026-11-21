@@ -23,7 +23,7 @@ export default function Page() {
 
   const [error, setError] = useState("");
 
-  // Fetch all cinemas
+
   useEffect(() => {
     async function fetchCinemas() {
       try {
@@ -50,7 +50,7 @@ export default function Page() {
     fetchCinemas();
   }, []);
 
-  // Handle booking quote
+
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,7 +89,7 @@ export default function Page() {
     }
   };
 
-  // Handle cinema creation
+
   const handleCinemaSubmit = async (e) => {
     e.preventDefault();
 
@@ -140,14 +140,14 @@ export default function Page() {
     }
   };
 
-  // Handle cinema selection
+
   const handleCinemaChange = (id) => {
     setSelectedCinemaId(id);
     setBookingResult(null);
     setError("");
   };
 
-  // Open cinema modal
+
   const handleOpenCinemaModal = () => {
     setCinemaForm({
       name: "",

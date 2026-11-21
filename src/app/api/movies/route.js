@@ -10,7 +10,7 @@ export async function POST(request) {
     const data = await request.json();
     const title = data.title.trim();
 
-    // Check if movie title already exists (case-insensitive)
+
     const duplicateMovie = await movies.findOne(
       { title },
       { collation: { locale: "en", strength: 2 } },
@@ -26,13 +26,13 @@ export async function POST(request) {
       );
     }
 
-    // Get all existing movies
+
     const existingMovies = await movies.find({}).toArray();
 
-    // Generate an ID for the new movie
+
     const newMovieId = new ObjectId();
 
-    // Check for circular dependency
+
     const hasCycle = hasCircularDependency(
       existingMovies,
       newMovieId,
@@ -49,7 +49,7 @@ export async function POST(request) {
       );
     }
 
-    // Insert movie if no cycle is detected
+
     const newMovie = {
       _id: newMovieId,
       title,

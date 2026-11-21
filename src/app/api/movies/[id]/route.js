@@ -17,7 +17,7 @@ export async function PATCH(request, { params }) {
 
     const data = await request.json();
 
-    // Find the movie being updated
+
     const currentMovie = await movies.findOne({
       _id: new ObjectId(id),
     });
@@ -26,7 +26,7 @@ export async function PATCH(request, { params }) {
       return Response.json({ message: "Movie not found" }, { status: 404 });
     }
 
-    // Check if another movie already uses this title
+
     const title = (data.title ?? currentMovie.title).trim();
 
     const duplicateMovie = await movies.findOne(
@@ -47,14 +47,14 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Get all movies for cycle detection
+
     const existingMovies = await movies.find({}).toArray();
 
-    // Use new prerequisites if provided, otherwise keep existing ones
+
     const prerequisites =
       data.prerequisites ?? currentMovie.prerequisites ?? [];
 
-    // Check for circular dependency
+
     const hasCycle = hasCircularDependency(
       existingMovies,
       currentMovie._id,
@@ -71,7 +71,7 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Prepare updated movie
+
     const updatedMovie = {
       title,
       releaseDate: data.releaseDate ?? currentMovie.releaseDate,

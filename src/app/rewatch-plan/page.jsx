@@ -14,7 +14,7 @@ export default function Page() {
     const [loadingRewatch, setLoadingRewatch] = useState(false);
     const [error, setError] = useState("");
 
-    // Fetch all movies
+
     useEffect(() => {
         async function fetchMovies() {
             try {
@@ -27,7 +27,7 @@ export default function Page() {
 
                 setMovies(data);
 
-                // Select the first movie by default
+
                 if (data.length > 0) {
                     setSelectedMovie(data[0]);
                 }
@@ -42,8 +42,7 @@ export default function Page() {
         fetchMovies();
     }, []);
 
-    // Fetch rewatch order whenever selected movie changes
-    // Fetch rewatch order whenever selected movie changes
+
     useEffect(() => {
         if (!selectedMovie) {
             setRewatchOrder({});

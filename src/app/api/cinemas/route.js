@@ -25,7 +25,7 @@ export async function POST(request) {
   try {
     const { name, bundleSizes } = await request.json();
 
-    // Validate cinema name
+
     if (!name || typeof name !== "string" || !name.trim()) {
       return Response.json(
         { message: "Cinema name is required" },
@@ -33,7 +33,7 @@ export async function POST(request) {
       );
     }
 
-    // Validate bundle sizes
+
     if (
       !Array.isArray(bundleSizes) ||
       bundleSizes.length < 1 ||

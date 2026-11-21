@@ -43,7 +43,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile and Tablet Header */}
+
       <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => setIsOpen(true)}
@@ -60,7 +60,7 @@ export default function Sidebar() {
         <div className="w-9" />
       </header>
 
-      {/* Mobile and Tablet Backdrop */}
+
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -68,13 +68,13 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar */}
+
       <aside
         className={`fixed top-0 left-0 z-50 h-screen w-64 bg-background border-r border-border p-5 flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        {/* Logo */}
+
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight">
@@ -95,17 +95,17 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Main Navigation */}
+
         <nav className="flex flex-col gap-2">
           {renderLinks(mainNavigation)}
         </nav>
 
-        {/* Bottom Navigation */}
+
         <nav className="flex flex-col gap-2 mt-auto pt-8">
           {renderLinks(bottomNavigation)}
         </nav>
 
-        {/* Footer */}
+
         <div className="hidden lg:block mt-8">
           <p className="text-xs text-text-muted">
             DOOMSDAY READY © 2026

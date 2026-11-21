@@ -15,10 +15,8 @@ export default function RewatchPlan({
   loading = false,
   onSelectMovie,
 }) {
-  const formatDate = (date) =>
-    new Date(date).getFullYear();
+  const formatDate = (date) => new Date(date).getFullYear();
 
-  // Convert minutes into hours and minutes
   const formatRuntime = (minutes) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -30,18 +28,15 @@ export default function RewatchPlan({
       : `${hours}h`;
   };
 
-  // Sort watch levels numerically
   const watchLevels = Object.entries(rewatchOrder).sort(
     ([levelA], [levelB]) => Number(levelA) - Number(levelB)
   );
 
-  // Calculate total prerequisite movies
   const totalPrerequisites = watchLevels.reduce(
     (total, [, levelMovies]) => total + levelMovies.length,
     0
   );
 
-  // Calculate total unwatched runtime
   const totalUnwatchedRuntime = watchLevels.reduce(
     (total, [, levelMovies]) =>
       total +
@@ -53,7 +48,6 @@ export default function RewatchPlan({
     0
   );
 
-  // Calculate unwatched runtime for each level
   const getLevelUnwatchedRuntime = (levelMovies) =>
     levelMovies.reduce(
       (total, movie) =>
@@ -70,8 +64,6 @@ export default function RewatchPlan({
     <main className="min-h-screen bg-background text-foreground">
       <section className="p-5 md:p-8 lg:p-10">
         <div className="max-w-7xl mx-auto">
-
-          {/* Page Header */}
           <div className="mb-8">
             <p className="text-primary text-sm mb-2">
               Rewatch Planner
@@ -86,10 +78,7 @@ export default function RewatchPlan({
             </p>
           </div>
 
-          {/* Main Layout */}
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(280px,0.85fr)_minmax(0,2fr)] gap-6">
-
-            {/* Movie Selection */}
             <div className="bg-surface rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -112,21 +101,21 @@ export default function RewatchPlan({
                   {movies.map((movie) => (
                     <button
                       key={movie._id}
-
                       onClick={() => {
                         onSelectMovie(movie);
 
-                        document.getElementById("selected-movie-section")?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
+                        document
+                          .getElementById("selected-movie-section")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
                       }}
-
-                      
-                      className={`w-full flex items-center gap-3 text-left p-4 rounded-lg border transition-colors cursor-pointer ${selectedMovie?._id === movie._id
-                        ? "bg-primary-muted border-primary"
-                        : "bg-surface-secondary border-transparent hover:border-border"
-                        }`}
+                      className={`w-full flex items-center gap-3 text-left p-4 rounded-lg border transition-colors cursor-pointer ${
+                        selectedMovie?._id === movie._id
+                          ? "bg-primary-muted border-primary"
+                          : "bg-surface-secondary border-transparent hover:border-border"
+                      }`}
                     >
                       <div className="shrink-0">
                         <FiFilm
@@ -168,13 +157,10 @@ export default function RewatchPlan({
               )}
             </div>
 
-            {/* Rewatch Order */}
             <div
               id="selected-movie-section"
               className="bg-surface rounded-xl p-6 min-w-0"
             >
-
-              {/* Selected Movie Header */}
               {selectedMovie ? (
                 <>
                   <div className="mb-6">
@@ -201,7 +187,6 @@ export default function RewatchPlan({
                     <>
                       {totalPrerequisites > 0 ? (
                         <>
-                          {/* Total Unwatched Runtime */}
                           <div className="bg-surface-secondary rounded-lg p-5 mb-6">
                             <div className="flex items-center gap-3">
                               <div className="bg-primary-muted rounded-lg p-3">
@@ -240,7 +225,6 @@ export default function RewatchPlan({
                             </div>
                           </div>
 
-                          {/* Watch Levels */}
                           <div className="space-y-6">
                             {watchLevels.map(([level, levelMovies]) => {
                               const levelRuntime =
@@ -248,7 +232,6 @@ export default function RewatchPlan({
 
                               return (
                                 <div key={level}>
-                                  {/* Level Header */}
                                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                                     <div className="flex items-center gap-3">
                                       <span className="bg-primary-muted text-primary text-xs font-semibold px-3 py-1.5 rounded-full">
@@ -269,7 +252,6 @@ export default function RewatchPlan({
                                     </span>
                                   </div>
 
-                                  {/* Movies in Level */}
                                   <div className="space-y-3">
                                     {levelMovies.map((movie) => (
                                       <div
@@ -295,10 +277,11 @@ export default function RewatchPlan({
                                         </div>
 
                                         <span
-                                          className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 ${movie.watched
-                                            ? "bg-green-500/15 text-green-400"
-                                            : "bg-yellow-500/15 text-yellow-400"
-                                            }`}
+                                          className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 ${
+                                            movie.watched
+                                              ? "bg-green-500/15 text-green-400"
+                                              : "bg-yellow-500/15 text-yellow-400"
+                                          }`}
                                         >
                                           {movie.watched
                                             ? "Watched"
