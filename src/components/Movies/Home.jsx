@@ -13,6 +13,7 @@ export default function Home() {
   const [editingMovie, setEditingMovie] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchingMovies, setFetchingMovies] = useState(true);
+  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -28,10 +29,14 @@ export default function Home() {
         );
         const data = await response.json();
 
-        if (!response.ok) return;
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch movies");
+        }
 
         setMovies(Array.isArray(data) ? data : data.movies || []);
-      } catch {
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
       } finally {
         setFetchingMovies(false);
       }
@@ -49,6 +54,7 @@ export default function Home() {
     });
     setSelectedPrerequisites([]);
     setAvailableMovies(movies);
+    setError("");
     setShowMovieModal(true);
   };
 
@@ -63,12 +69,14 @@ export default function Home() {
     setAvailableMovies(
       movies.filter((item) => item._id !== movie._id)
     );
+    setError("");
     setShowMovieModal(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const isEditing = Boolean(editingMovie);
@@ -92,7 +100,9 @@ export default function Home() {
 
       const data = await response.json();
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to save movie");
+      }
 
       if (isEditing) {
         setMovies((prev) =>
@@ -106,6 +116,8 @@ export default function Home() {
 
       setShowMovieModal(false);
       setEditingMovie(null);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -128,14 +140,19 @@ export default function Home() {
 
       const data = await response.json();
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update watched status");
+      }
 
       setMovies((prev) =>
         prev.map((item) =>
           item._id === movie._id ? data.movie : item
         )
       );
-    } catch {}
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
   };
 
   const handleDelete = async (movie) => {
@@ -153,12 +170,19 @@ export default function Home() {
         }
       );
 
-      if (!response.ok) return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete movie");
+      }
 
       setMovies((prev) =>
         prev.filter((item) => item._id !== movie._id)
       );
-    } catch {}
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
   };
 
   const handlePrerequisiteChange = (id) => {
@@ -283,6 +307,7 @@ export default function Home() {
           }}
           onSubmit={handleSubmit}
           loading={loading}
+          error={error}
         />
       )}
     </main>
