@@ -66,6 +66,12 @@ Added Docker Compose support to start the application with a single command:
 docker compose up --build
 ```
 
+## AI Usage
+
+- AI tools were used during development for guidance, debugging, reviewing implementation approaches, and assistance with documentation.
+- The application logic, API implementation, database integration, and frontend were developed and tested as part of this assessment.
+- AI tools were also used to create test datasets and make repetitive tasks easier.
+
 ## Environment Variables
 
 The `.env.example` file is publicly available and includes the test database connection details to make it easier for reviewers to run and test the application locally. The file is intentionally included in the repository for assessment purposes.
